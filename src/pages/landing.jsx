@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (
@@ -36,10 +37,10 @@ const LandingPage = () => {
       </section>
       <div className="flex gap-6 justify-center">
         <Button variant="blue" size="xl">
-          Find Jobs
+          <Link to={"/jobs"}>Find Jobs</Link>
         </Button>
         <Button variant="destructive" size="xl">
-          Post a Job
+          <Link to={"/post-job"}>Post a Job</Link>
         </Button>
       </div>
       <Carousel
@@ -84,7 +85,7 @@ const LandingPage = () => {
         </Card>
       </section>
 
-      <Accordion type="multiple" collapsible className="w-full">
+      <Accordion type="multiple" className="w-full">
         {faqs.map((faq, index) => (
           <AccordionItem key={index} value={`item-${index + 1}`}>
             <AccordionTrigger>{faq.question}</AccordionTrigger>

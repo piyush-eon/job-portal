@@ -5,6 +5,12 @@ import AppLayout from "./layouts/app-layout";
 import { ThemeProvider } from "./components/theme-provider";
 
 import "./App.css";
+import Onboarding from "./pages/onboarding";
+import ProtectedRoute from "./components/protected-route";
+import PostJob from "./pages/post-job";
+import JobListing from "./pages/jobListing";
+import MyJobs from "./pages/my-jobs";
+import SavedJobs from "./pages/saved-jobs";
 
 const router = createBrowserRouter([
   {
@@ -14,18 +20,46 @@ const router = createBrowserRouter([
         path: "/",
         element: <LandingPage />,
       },
-      // {
-      //   path: "/onboarding",
-      //   element: <Onboarding />,
-      // },
-      // {
-      //   path: "/dashboard",
-      //   element: (
-      //     <RequireAuth>
-      //       <Dashboard />
-      //     </RequireAuth>
-      //   ),
-      // },
+      {
+        path: "/onboarding",
+        element: (
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/jobs",
+        element: (
+          <ProtectedRoute>
+            <JobListing />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/post-job",
+        element: (
+          <ProtectedRoute>
+            <PostJob />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/my-jobs",
+        element: (
+          <ProtectedRoute>
+            <MyJobs />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/saved-jobs",
+        element: (
+          <ProtectedRoute>
+            <SavedJobs />
+          </ProtectedRoute>
+        ),
+      },
       // {
       //   path: "/job/:id",
       //   element: (
@@ -33,25 +67,6 @@ const router = createBrowserRouter([
       //       <JobPage />
       //     </RequireAuth>
       //   ),
-      // },
-      // {
-      //   path: "/wishlisted",
-      //   element: (
-      //     <RequireAuth>
-      //       <SavedJobs />
-      //     </RequireAuth>
-      //   ),
-      // },
-      //   path: "/applications",
-      //   element: (
-      //     <RequireAuth>
-      //       <Applications />
-      //     </RequireAuth>
-      //   ),
-      // },
-      // {
-      //   path: "/post-job",
-      //   element: <PostJob />,
       // },
     ],
   },
