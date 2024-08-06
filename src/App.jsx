@@ -1,46 +1,67 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignIn,
-  useAuth,
-  UserButton,
-  useUser,
-} from "@clerk/clerk-react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
+import LandingPage from "./pages/landing";
+import AppLayout from "./layouts/app-layout";
+import { ThemeProvider } from "./components/theme-provider";
+
 import "./App.css";
-import { useEffect } from "react";
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
+      // {
+      //   path: "/onboarding",
+      //   element: <Onboarding />,
+      // },
+      // {
+      //   path: "/dashboard",
+      //   element: (
+      //     <RequireAuth>
+      //       <Dashboard />
+      //     </RequireAuth>
+      //   ),
+      // },
+      // {
+      //   path: "/job/:id",
+      //   element: (
+      //     <RequireAuth>
+      //       <JobPage />
+      //     </RequireAuth>
+      //   ),
+      // },
+      // {
+      //   path: "/wishlisted",
+      //   element: (
+      //     <RequireAuth>
+      //       <SavedJobs />
+      //     </RequireAuth>
+      //   ),
+      // },
+      //   path: "/applications",
+      //   element: (
+      //     <RequireAuth>
+      //       <Applications />
+      //     </RequireAuth>
+      //   ),
+      // },
+      // {
+      //   path: "/post-job",
+      //   element: <PostJob />,
+      // },
+    ],
+  },
+]);
 
 function App() {
-  const { userId, getToken } = useAuth();
-  const { user, isSignedIn } = useUser();
-
-  useEffect(() => {
-    const test = async () => {
-      const token = await getToken({ template: "supabase" });
-      console.log(user, token, userId);
-    };
-
-    test();
-  }, [isSignedIn]);
-
   return (
-    <header>
-      <SignedOut>
-        <SignIn />
-      </SignedOut>
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-
-      <button
-        onClick={async () => {
-          await user
-            .update({ unsafeMetadata: { role: "recruiter" } })
-            .then((res) => console.log(res));
-        }}
-      >
-        recruiter
-      </button>
-    </header>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <RouterProvider router={router} />
+    </ThemeProvider>
   );
 }
 
