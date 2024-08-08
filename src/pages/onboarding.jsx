@@ -2,9 +2,10 @@ import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { BarLoader } from "react-spinners";
 
 const Onboarding = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const navigate = useNavigate();
 
   const navigateUser = (currRole) => {
@@ -27,7 +28,11 @@ const Onboarding = () => {
     if (user?.unsafeMetadata?.role) {
       navigateUser(user.unsafeMetadata.role);
     }
-  }, []);
+  }, [user]);
+
+  if (!isLoaded) {
+    return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center mt-40">

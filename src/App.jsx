@@ -11,6 +11,7 @@ import PostJob from "./pages/post-job";
 import JobListing from "./pages/jobListing";
 import MyJobs from "./pages/my-jobs";
 import SavedJobs from "./pages/saved-jobs";
+import JobPage from "./pages/job";
 
 const router = createBrowserRouter([
   {
@@ -60,12 +61,20 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/job/:id",
+        element: (
+          <ProtectedRoute>
+            <JobPage />
+          </ProtectedRoute>
+        ),
+      },
       // {
-      //   path: "/job/:id",
+      //   path: "/edit-job/:id",
       //   element: (
-      //     <RequireAuth>
-      //       <JobPage />
-      //     </RequireAuth>
+      //     <ProtectedRoute>
+      //       <EditJobPage />
+      //     </ProtectedRoute>
       //   ),
       // },
     ],
