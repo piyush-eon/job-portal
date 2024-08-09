@@ -36,12 +36,16 @@ const LandingPage = () => {
         </p>
       </section>
       <div className="flex gap-6 justify-center">
-        <Button variant="blue" size="xl">
-          <Link to={"/jobs"}>Find Jobs</Link>
-        </Button>
-        <Button variant="destructive" size="xl">
-          <Link to={"/post-job"}>Post a Job</Link>
-        </Button>
+        <Link to={"/jobs"}>
+          <Button variant="blue" size="xl">
+            Find Jobs
+          </Button>
+        </Link>
+        <Link to={"/post-job"}>
+          <Button variant="destructive" size="xl">
+            Post a Job
+          </Button>
+        </Link>
       </div>
       <Carousel
         plugins={[

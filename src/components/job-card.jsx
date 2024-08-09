@@ -14,8 +14,8 @@ import { saveJob } from "@/api/apiJobs";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
-const JobCard = ({ job }) => {
-  const [saved, setSaved] = useState(job.saved.length > 0);
+const JobCard = ({ job, savedInit = false, onJobSave = () => {} }) => {
+  const [saved, setSaved] = useState(savedInit);
 
   const { user } = useUser();
 
@@ -32,6 +32,7 @@ const JobCard = ({ job }) => {
       user_id: user.id,
       job_id: job.id,
     });
+    onJobSave();
   };
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const JobCard = ({ job }) => {
       </CardHeader>
       <CardContent className="flex flex-col gap-4 flex-1">
         <div className="flex justify-between">
-          <img src={job.company.logo_url} className="h-6" />
+          {job.company && <img src={job.company.logo_url} className="h-6" />}
           <div className="flex gap-2 items-center">
             <MapPinIcon size={15} /> {job.location}
           </div>
