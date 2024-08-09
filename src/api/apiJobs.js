@@ -50,7 +50,7 @@ export async function getSingleJob(token, { job_id }) {
   let query = supabase
     .from("jobs")
     .select(
-      "*, saved: saved_jobs(id), company: companies(name,logo_url), applications: applications(*)"
+      "*, company: companies(name,logo_url), applications: applications(*)"
     )
     .eq("id", job_id)
     .single();
@@ -65,9 +65,56 @@ export async function getSingleJob(token, { job_id }) {
   return data;
 }
 
+// - Add / Remove Saved Job
+export async function saveJob(token, { alreadySaved }, saveData) {
+  const supabase = await supabaseClient(token);
+
+  if (alreadySaved) {
+    // If the job is already saved, remove it
+    const { data, error: deleteError } = await supabase
+      .from("saved_jobs")
+      .delete()
+      .eq("job_id", saveData.job_id);
+
+    if (deleteError) {
+      console.error("Error removing saved job:", deleteError);
+      return data;
+    }
+
+    return data;
+  } else {
+    // If the job is not saved, add it to saved jobs
+    const { data, error: insertError } = await supabase
+      .from("saved_jobs")
+      .insert([saveData])
+      .select();
+
+    if (insertError) {
+      console.error("Error saving job:", insertError);
+      return data;
+    }
+
+    return data;
+  }
+}
+
+// - job isOpen toggle - (recruiter_id = auth.uid())
+export async function updateHiringStatus(token, { job_id }, isOpen) {
+  const supabase = await supabaseClient(token);
+  const { data, error } = await supabase
+    .from("jobs")
+    .update({ isOpen })
+    .eq("id", job_id)
+    .select();
+
+  if (error) {
+    console.error("Error Updating Hiring Status:", error);
+    return null;
+  }
+
+  return data;
+}
+
+// - delete job
+
 // - post job
-// - edit job - (recruiter_id = auth.uid())
-// - read company list
-// - Save Job
-// - Remove Saved Job
-// - Read Saved Jobs

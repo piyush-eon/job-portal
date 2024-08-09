@@ -1,18 +1,23 @@
-import { getSingleJob } from "@/api/apiJobs";
-import { Button } from "@/components/ui/button";
+import { getSingleJob, updateHiringStatus } from "@/api/apiJobs";
+import ApplicationCard from "@/components/application-card";
+import { ApplyJobDrawer } from "@/components/apply-job";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@clerk/clerk-react";
 import MDEditor from "@uiw/react-md-editor";
 import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 
 const JobPage = () => {
-  // - Can show a status bar for candidates ( if closed or not)
-  // - CTA will contain "Apply" or "Applies" for candidates and "Show Candidates" for recruiter
   // - Edit button for recuiter who posted the job
-  // - Wishlist button for Candidate
 
   const { id } = useParams();
   const { isLoaded, user } = useUser();
@@ -28,6 +33,18 @@ const JobPage = () => {
   useEffect(() => {
     if (isLoaded) fnJob();
   }, [isLoaded]);
+
+  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(
+    updateHiringStatus,
+    {
+      job_id: id,
+    }
+  );
+
+  const handleStatusChange = (value) => {
+    const isOpen = value === "open";
+    fnHiringStatus(isOpen).then(() => fnJob());
+  };
 
   if (!isLoaded || loadingJob) {
     return <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />;
@@ -70,29 +87,49 @@ const JobPage = () => {
       </h2>
       <MDEditor.Markdown
         source={job?.requirements}
-        className="bg-transparent sm:text-lg" // add global ul styles
+        className="bg-transparent sm:text-lg" // add global ul styles - tutorial
       />
       <div className="flex flex-col gap-2">
-        <Button
-          size="lg"
-          variant={job?.isOpen ? "blue" : "destructive"}
-          disabled={!job?.isOpen || job?.recruiter_id === user?.id}
-        >
-          {job?.isOpen ? "Apply" : "Closed"}
-        </Button>
-        {job?.recruiter_id === user?.id && (
-          <Link to={`/edit-job/${id}`}>
-            <Button
-              size="lg"
-              className="w-full"
-              variant="destructive"
-              disabled={!job?.isOpen}
+        {job?.recruiter_id !== user?.id ? (
+          <ApplyJobDrawer
+            job={job}
+            user={user}
+            fetchJob={fnJob}
+            applied={job?.applications?.find(
+              (ap) => ap.candidate_id === user.id
+            )}
+          />
+        ) : (
+          <Select onValueChange={handleStatusChange}>
+            <SelectTrigger
+              className={`w-full ${
+                job?.isOpen ? "bg-green-950" : "bg-red-950"
+              }`}
             >
-              Edit
-            </Button>
-          </Link>
+              <SelectValue
+                placeholder={
+                  "Hiring Status " + (job?.isOpen ? "( Open )" : "( Closed )")
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
         )}
+        {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
       </div>
+      {job?.applications?.length > 0 && job?.recruiter_id === user?.id && (
+        <div>
+          <h2 className="font-bold mb-4 text-xl ml-1">Applications</h2>
+          {job?.applications.map((application) => {
+            return (
+              <ApplicationCard key={application.id} application={application} />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
