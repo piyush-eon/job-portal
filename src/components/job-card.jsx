@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Heart, MapPinIcon } from "lucide-react";
+import { Heart, MapPinIcon, Trash2Icon } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -10,29 +10,42 @@ import {
 } from "./ui/card";
 import { Link } from "react-router-dom";
 import useFetch from "@/hooks/use-fetch";
-import { saveJob } from "@/api/apiJobs";
+import { deleteJob, saveJob } from "@/api/apiJobs";
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
+import { BarLoader } from "react-spinners";
 
-const JobCard = ({ job, savedInit = false, onJobSave = () => {} }) => {
+const JobCard = ({
+  job,
+  savedInit = false,
+  onJobAction = () => {},
+  isMyJob = false,
+}) => {
   const [saved, setSaved] = useState(savedInit);
 
   const { user } = useUser();
+
+  const { loading: loadingDeleteJob, fn: fnDeleteJob } = useFetch(deleteJob, {
+    job_id: job.id,
+  });
 
   const {
     loading: loadingSavedJob,
     data: savedJob,
     fn: fnSavedJob,
-  } = useFetch(saveJob, {
-    alreadySaved: saved,
-  });
+  } = useFetch(saveJob);
 
   const handleSaveJob = async () => {
     await fnSavedJob({
       user_id: user.id,
       job_id: job.id,
     });
-    onJobSave();
+    onJobAction();
+  };
+
+  const handleDeleteJob = async () => {
+    await fnDeleteJob();
+    onJobAction();
   };
 
   useEffect(() => {
@@ -41,8 +54,21 @@ const JobCard = ({ job, savedInit = false, onJobSave = () => {} }) => {
 
   return (
     <Card className="flex flex-col">
-      <CardHeader>
-        <CardTitle className="font-bold">{job.title}</CardTitle>
+      {loadingDeleteJob && (
+        <BarLoader className="mt-4" width={"100%"} color="#36d7b7" />
+      )}
+      <CardHeader className="flex">
+        <CardTitle className="flex justify-between font-bold">
+          {job.title}
+          {isMyJob && (
+            <Trash2Icon
+              fill="red"
+              size={18}
+              className="text-red-300 cursor-pointer"
+              onClick={handleDeleteJob}
+            />
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 flex-1">
         <div className="flex justify-between">
@@ -60,18 +86,20 @@ const JobCard = ({ job, savedInit = false, onJobSave = () => {} }) => {
             More Details
           </Button>
         </Link>
-        <Button
-          variant="outline"
-          className="w-15"
-          onClick={handleSaveJob}
-          disabled={loadingSavedJob}
-        >
-          {saved ? (
-            <Heart size={20} fill="red" stroke="red" />
-          ) : (
-            <Heart size={20} />
-          )}
-        </Button>
+        {!isMyJob && (
+          <Button
+            variant="outline"
+            className="w-15"
+            onClick={handleSaveJob}
+            disabled={loadingSavedJob}
+          >
+            {saved ? (
+              <Heart size={20} fill="red" stroke="red" />
+            ) : (
+              <Heart size={20} />
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

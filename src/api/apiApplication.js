@@ -30,8 +30,6 @@ export async function applyToJob(token, _, jobData) {
     throw new Error("Error submitting Application");
   }
 
-  console.log(data, "done");
-
   return data;
 }
 
