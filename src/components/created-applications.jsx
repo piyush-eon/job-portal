@@ -26,7 +26,7 @@ const CreatedApplications = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {applications?.map((application) => {
         return (
           <ApplicationCard
