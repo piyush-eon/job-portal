@@ -1,6 +1,22 @@
 /* eslint-disable react/prop-types */
 import { Boxes, BriefcaseBusiness, Download, School } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { updateApplicationStatus } from "@/api/apiApplication";
+import useFetch from "@/hooks/use-fetch";
+import { BarLoader } from "react-spinners";
 
 const ApplicationCard = ({ application }) => {
   const handleDownload = () => {
@@ -10,8 +26,20 @@ const ApplicationCard = ({ application }) => {
     link.click();
   };
 
+  const { loading: loadingHiringStatus, fn: fnHiringStatus } = useFetch(
+    updateApplicationStatus,
+    {
+      job_id: application.job_id,
+    }
+  );
+
+  const handleStatusChange = (status) => {
+    fnHiringStatus(status).then(() => fnHiringStatus());
+  };
+
   return (
     <Card>
+      {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
       <CardHeader>
         <CardTitle className="flex justify-between font-bold">
           {application?.name}
@@ -37,8 +65,24 @@ const ApplicationCard = ({ application }) => {
           </div>
         </div>
         <hr />
-        {new Date(application?.created_at).toLocaleString()}
       </CardContent>
+      <CardFooter className="flex justify-between">
+        <span>{new Date(application?.created_at).toLocaleString()}</span>
+        <Select
+          onValueChange={handleStatusChange}
+          defaultValue={application.status}
+        >
+          <SelectTrigger className="w-52">
+            <SelectValue placeholder="Application Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="applied">Applied</SelectItem>
+            <SelectItem value="interviewing">Interviewing</SelectItem>
+            <SelectItem value="hired">Hired</SelectItem>
+            <SelectItem value="rejected">Rejected</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardFooter>
     </Card>
   );
 };
