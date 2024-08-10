@@ -18,7 +18,7 @@ import { updateApplicationStatus } from "@/api/apiApplication";
 import useFetch from "@/hooks/use-fetch";
 import { BarLoader } from "react-spinners";
 
-const ApplicationCard = ({ application }) => {
+const ApplicationCard = ({ application, isCandidate = false }) => {
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = application?.resume;
@@ -42,7 +42,9 @@ const ApplicationCard = ({ application }) => {
       {loadingHiringStatus && <BarLoader width={"100%"} color="#36d7b7" />}
       <CardHeader>
         <CardTitle className="flex justify-between font-bold">
-          {application?.name}
+          {isCandidate
+            ? `${application?.job?.title} at ${application?.job?.company?.name}`
+            : application?.name}
           <Download
             size={18}
             className="bg-white text-black rounded-full h-8 w-8 p-1.5 cursor-pointer"
@@ -68,20 +70,26 @@ const ApplicationCard = ({ application }) => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <span>{new Date(application?.created_at).toLocaleString()}</span>
-        <Select
-          onValueChange={handleStatusChange}
-          defaultValue={application.status}
-        >
-          <SelectTrigger className="w-52">
-            <SelectValue placeholder="Application Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="applied">Applied</SelectItem>
-            <SelectItem value="interviewing">Interviewing</SelectItem>
-            <SelectItem value="hired">Hired</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
+        {isCandidate ? (
+          <span className="capitalize font-bold">
+            Status: {application.status}
+          </span>
+        ) : (
+          <Select
+            onValueChange={handleStatusChange}
+            defaultValue={application.status}
+          >
+            <SelectTrigger className="w-52">
+              <SelectValue placeholder="Application Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="applied">Applied</SelectItem>
+              <SelectItem value="interviewing">Interviewing</SelectItem>
+              <SelectItem value="hired">Hired</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </CardFooter>
     </Card>
   );
