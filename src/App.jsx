@@ -69,14 +69,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      // {
-      //   path: "/edit-job/:id",
-      //   element: (
-      //     <ProtectedRoute>
-      //       <EditJobPage />
-      //     </ProtectedRoute>
-      //   ),
-      // },
     ],
   },
 ]);
