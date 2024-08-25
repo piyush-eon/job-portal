@@ -1,6 +1,10 @@
-import { getSingleJob, updateHiringStatus } from "@/api/apiJobs";
-import ApplicationCard from "@/components/application-card";
-import { ApplyJobDrawer } from "@/components/apply-job";
+import { useEffect } from "react";
+import { BarLoader } from "react-spinners";
+import MDEditor from "@uiw/react-md-editor";
+import { useParams } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
+import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
+
 import {
   Select,
   SelectContent,
@@ -8,13 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ApplyJobDrawer } from "@/components/apply-job";
+import ApplicationCard from "@/components/application-card";
+
 import useFetch from "@/hooks/use-fetch";
-import { useUser } from "@clerk/clerk-react";
-import MDEditor from "@uiw/react-md-editor";
-import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { BarLoader } from "react-spinners";
+import { getSingleJob, updateHiringStatus } from "@/api/apiJobs";
 
 const JobPage = () => {
   const { id } = useParams();
